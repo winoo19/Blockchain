@@ -1,11 +1,18 @@
 import json
 import hashlib
-from typing import List, Dict
 from time import time
+from typing import List, Dict
 
 
 class Bloque:
-    def __init__(self, indice: int, transacciones: List[Dict], timestamp: float, hash_previo: str, prueba: int =0):
+    def __init__(
+        self,
+        indice: int = 0,
+        transacciones: List[Dict] = [],
+        timestamp: float = 0,
+        hash_previo: str = "",
+        prueba: int = 0,
+    ):
         """
         Constructor de la clase `Bloque`.
         :param indice: ID unico del bloque.
@@ -27,29 +34,36 @@ class Bloque:
         """
         block_string = json.dumps(self.__dict__, sort_keys=True)
         return hashlib.sha256(block_string.encode()).hexdigest()
-    
+
     def toDict(self):
         return self.__dict__
 
+    def fromDict(self, d):
+        self.indice = d["indice"]
+        self.transacciones = d["transacciones"]
+        self.timestamp = d["timestamp"]
+        self.hash_previo = d["hash_previo"]
+        self.prueba = d["prueba"]
+        self.hash = d["hash"]
+        return self
 
 
 class Blockchain:
     def __init__(self):
         self.chain: List[Bloque] = []
-        self.dificultad = 4
+        self.dificultad = 1
         self.pool = []
         self.n_bloques = 0
+
+        self.primer_bloque()
 
     def primer_bloque(self):
         """
         Crea el bloque inicial vacío, con tiempo 0 y hash previo de 1
         """
-        primer = Bloque(
-            indice = 0,
-            timestamp = 0,
-            hash_previo = 1,
-        )
-        return primer
+        bloque = self.nuevo_bloque(hash_previo="1")
+        hash_bloque = self.prueba_trabajo(bloque)
+        self.integra_bloque(bloque, hash_bloque)
 
     def nuevo_bloque(self, hash_previo: str) -> Bloque:
         """
@@ -59,15 +73,14 @@ class Blockchain:
         :param hash_previo: el hash del bloque anterior de la cadena
         :return: el nuevo bloque
         """
-        # Cambiar n_bloques o pool?
+
         new_block = Bloque(
-            indice = self.n_bloques+1,
-            transacciones = self.pool,
-            timestamp = time(),
-            hash_previo = hash_previo,
-            prueba = 0
+            indice=self.n_bloques + 1,
+            transacciones=self.pool,
+            timestamp=time(),
+            hash_previo=hash_previo,
+            prueba=0,
         )
-        self.prueba_trabajo(new_block)
 
         return new_block
 
@@ -79,13 +92,9 @@ class Blockchain:
         :param destino: <str> el que recibe la transaccion
         :param cantidad: <int> la candidad
         """
-        transaccion = {
-            "origen": origen,
-            "destino": destino,
-            "cantidad": cantidad
-        }
+        transaccion = {"origen": origen, "destino": destino, "cantidad": cantidad}
         self.pool.append(transaccion)
-    
+
     def prueba_trabajo(self, bloque: Bloque) -> str:
         """
         Algoritmo simple de prueba de trabajo:
@@ -97,9 +106,9 @@ class Blockchain:
         :return: el hash del nuevo bloque (dejara el campo de hash del bloque sin
         modificar)
         """
-        new_hash = "0"*(self.dificultad-1)+"1"
+        new_hash = "0" * (self.dificultad - 1) + "1"
 
-        while new_hash[:self.dificultad] != "0"*self.dificultad:
+        while new_hash[: self.dificultad] != "0" * self.dificultad:
             bloque.prueba += 1
             new_hash = bloque.calcular_hash()
 
@@ -117,14 +126,14 @@ class Blockchain:
         :param hash_bloque:
         :return:
         """
-        if hash_bloque[:self.dificultad] != "0"*self.dificultad:
+        if hash_bloque[: self.dificultad] != "0" * self.dificultad:
             return False
 
         if bloque.calcular_hash() != hash_bloque:
             return False
 
-        return True       
-    
+        return True
+
     def integra_bloque(self, bloque_nuevo: Bloque, hash_prueba: str) -> bool:
         """
         Metodo para integran correctamente un bloque a la cadena de bloques.
@@ -139,14 +148,44 @@ class Blockchain:
         :return: True si se ha podido ejecutar bien y False en caso contrario (si
         no ha pasado alguna prueba)
         """
-        if bloque_nuevo.hash_previo != self.chain[-1].hash:
+        if self.n_bloques > 0 and bloque_nuevo.hash_previo != self.chain[-1].hash:
             return False
-        
+
         if not self.prueba_valida(bloque_nuevo, hash_prueba):
             return False
 
         bloque_nuevo.hash = hash_prueba
         self.chain.append(bloque_nuevo)
         self.pool = []
+        self.n_bloques += 1
 
         return True
+
+    def check_chain(self):
+        """
+        Metodo que comprueba la integridad de la cadena de bloques. Para ello
+        recorre la cadena de bloques y comprueba que el hash del bloque actual
+        coincide con el hash_previo del siguiente bloque. Si alguno de los dos
+        hashes no coincide, devolvera False. Si todos los hashes coinciden,
+        devolvera True
+        :return: True si la cadena es valida y False en caso contrario
+        """
+        for i in range(len(self.chain) - 1):
+            if self.chain[i].hash != self.chain[i + 1].hash_previo:
+                return False
+        return True
+
+    def toDict(self):
+        d = {}
+        d["chain"] = [b.toDict() for b in self.chain]
+        d["dificultad"] = self.dificultad
+        d["pool"] = self.pool
+        d["n_bloques"] = self.n_bloques
+        return d
+
+    def fromDict(self, d):
+        self.chain = [Bloque().fromDict(b) for b in d["chain"]]
+        self.dificultad = d["dificultad"]
+        self.pool = d["pool"]
+        self.n_bloques = d["n_bloques"]
+        return self

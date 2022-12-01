@@ -35,7 +35,7 @@ def copia():
 def nueva_transaccion():
     """Creates a new transaction from the given dictionary"""
     values = request.get_json()
-    # Comprobamos que todos los datos de la transaccion estan
+    # Comprobamos que todos los datos de la transaccion están
     required = ["origen", "destino", "cantidad"]
     if not all(k in values for k in required):
         return "Faltan valores", 400

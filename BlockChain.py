@@ -108,7 +108,7 @@ class Blockchain:
         """
         new_hash = "0" * (self.dificultad - 1) + "1"
 
-        while new_hash[: self.dificultad] != "0" * self.dificultad:
+        while new_hash[:self.dificultad] != "0" * self.dificultad:
             bloque.prueba += 1
             new_hash = bloque.calcular_hash()
 

@@ -19,6 +19,8 @@ for transaccion in transacciones:
 
 """minar"""
 r = requests.get("http://localhost:5000/minar")
+print("MINAR")
+print(json.dumps(r.json(), indent=4))
 
 """comprobar la cadena"""
 r = requests.get("http://localhost:5000/chain")
@@ -28,7 +30,7 @@ print(json.dumps(r.json(), indent=4))
 """register nodes"""
 r = requests.post(
     "http://localhost:5000/nodos/registrar",
-    json={"direccion_nodos": ["http://172.24.133.118:5001"]},
+    json={"direccion_nodos": ["http://172.24.131.238:5001"]},
 )
 
 print("NODOS")

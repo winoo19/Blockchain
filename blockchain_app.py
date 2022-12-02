@@ -63,7 +63,6 @@ def blockchain_completa():
         "chain": [b.toDict() for b in blockchain.chain if b.hash],
         "longitud": blockchain.n_bloques,  # longitud de la cadena
     }
-    print("Mi blockchain: ", response)
     return jsonify(response), 200
 
 

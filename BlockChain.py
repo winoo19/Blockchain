@@ -131,9 +131,6 @@ class Blockchain:
         Si cualquiera de ambas comprobaciones es falsa, devolvera falso y en caso
         contrario, verdadero
         """
-        print(json.dumps(bloque.toDict(), indent=4))
-        print("HASH BLOQUE: ", hash_bloque)
-        print("CALCULADO: ", bloque.calcular_hash())
         if hash_bloque[: self.dificultad] != "0" * self.dificultad:
             return False
 
@@ -176,11 +173,9 @@ class Blockchain:
         for i in range(len(self.chain) - 1):
             # Check Bloque
             if not self.prueba_valida(self.chain[i], self.chain[i].hash):
-                print("Bloque no valido")
                 return False
             # Check cahin link
             if self.chain[i].hash != self.chain[i + 1].hash_previo:
-                print("Hash previo no coincide")
                 return False
         return True
 

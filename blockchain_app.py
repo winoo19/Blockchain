@@ -177,7 +177,7 @@ def registrar_nodos_completo():
     if len(nodes_error_format) == 0 and len(nodes_error_register) == 0:
         response = {
             "mensaje": "Se han incluido nuevos nodos en la red",
-            "nodos_totales": list(nodos_red),
+            "nodos_totales": list(nodos_red) + [f"http://{mi_ip}:{puerto}"],
         }
         return jsonify(response), 200
 
@@ -211,7 +211,7 @@ def registrar_nodo_actualiza_blockchain():
 
     new_blockchain = read_json.get("blockchain")
     if new_blockchain is None:
-        return "Error: No se ha proporcionado una cadena de bloques", 400
+        return "Error: No se ha proporcionado una cadena de bloques", 401
 
     blockchain_leida = BlockChain.Blockchain().fromDict(new_blockchain)
 
@@ -220,7 +220,10 @@ def registrar_nodo_actualiza_blockchain():
         response = {
             "mensaje": "El blockchain de la red esta currupto",
         }
-        return jsonify(response), 401
+        print("El blockchain de la red esta currupto")
+        print("Blockchain leido:")
+        print(jsonify(blockchain_leida.toDict()))
+        return jsonify(response), 402
 
     # Actualizamos la blockchain
     blockchain = blockchain_leida
@@ -284,4 +287,5 @@ if __name__ == "__main__":
     puerto = args.puerto
     backup = threading.Thread(target=copia)
     backup.start()
-    app.run(host="0.0.0.0", port=puerto)
+    # app.run(host="0.0.0.0", port=puerto, debug=True)
+    app.run(host=f"{mi_ip}", port=puerto)

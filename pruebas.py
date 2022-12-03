@@ -1,6 +1,10 @@
 import requests
 import json
+import socket
 
+mi_ip = socket.gethostbyname(socket.gethostname())
+
+"""TRANSACCIONES AL NODO 1 (5000)"""
 transacciones = [
     {
         "origen": "A",
@@ -15,27 +19,52 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post("http://localhost:5000/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{mi_ip}:5000/transacciones/nueva", json=transaccion)
 
-"""minar"""
-r = requests.get("http://localhost:5000/minar")
-print("MINAR")
-print(json.dumps(r.json(), indent=4))
+"""MINAR NODO 1 (5000)"""
+r = requests.get(f"http://{mi_ip}:5000/minar")
+# print("RESPUESTA MINAR NODO 1 (5000)")
+# print(
+#     json.dumps(
+#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
+#         indent=4,
+#     )
+# )
 
-"""comprobar la cadena"""
-r = requests.get("http://localhost:5000/chain")
-print("CHAIN")
-print(json.dumps(r.json(), indent=4))
+"""CADENA NODO 1 (5000)"""
+r = requests.get(f"http://{mi_ip}:5000/chain")
+# print("CHAIN NODO 1 (5000)")
+# print(
+#     json.dumps(
+#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
+#         indent=4,
+#     )
+# )
 
-"""register nodes"""
+"""REGISTRAR NODO 2 (5001)"""
 r = requests.post(
-    "http://localhost:5000/nodos/registrar",
-    json={"direccion_nodos": ["http://172.24.131.238:5001"]},
+    f"http://{mi_ip}:5000/nodos/registrar",
+    json={"direccion_nodos": [f"http://{mi_ip}:5001"]},
 )
 
-print("NODOS")
-print(json.dumps(r.json(), indent=4))
+# print("RESPUESTA REGISTRAR NODO 2 (5001)")
+# print(
+#     json.dumps(
+#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
+#         indent=4,
+#     )
+# )
+# """CADENA NODO 2 (5001)"""
+# r = requests.get(f"http://{mi_ip}:5001/chain")
+# print("CHAIN NODO 2 (5001)")
+# print(
+#     json.dumps(
+#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
+#         indent=4,
+#     )
+# )
 
+"""TRANSACCIONES AL NODO 1 (5000)"""
 transacciones = [
     {
         "origen": "H",
@@ -50,18 +79,24 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post("http://localhost:5000/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{mi_ip}:5000/transacciones/nueva", json=transaccion)
 
 
-"""minar"""
-r = requests.get("http://localhost:5000/minar")
+"""MINAR NODO 1 (5000)"""
+r = requests.get(f"http://{mi_ip}:5000/minar")
 
-"""comprobar la cadena"""
-r = requests.get("http://localhost:5000/chain")
+"""CADENA NODO 1 (5000)"""
+r = requests.get(f"http://{mi_ip}:5000/chain")
 
-print("CHAIN")
-print(json.dumps(r.json(), indent=4, sort_keys=True))
+print("CHAIN NODO 1 (5000)")
+print(
+    json.dumps(
+        r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
+        indent=4,
+    )
+)
 
+"""TRANSACCIONES AL NODO 2 (5001)"""
 transacciones = [
     {
         "origen": "H",
@@ -71,10 +106,15 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post("http://localhost:5001/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{mi_ip}:5001/transacciones/nueva", json=transaccion)
 
-"""minar"""
-r = requests.get("http://localhost:5001/minar")
+"""MINAR NODO 2 (5001)"""
+r = requests.get(f"http://{mi_ip}:5001/minar")
 
-print("MINAR")
-print(json.dumps(r.json(), indent=4, sort_keys=True))
+print("RESPPUESTA MINAR NODO 2 (5001)")
+print(
+    json.dumps(
+        r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
+        indent=4,
+    )
+)

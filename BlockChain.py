@@ -49,6 +49,8 @@ class Bloque:
         """
         d = self.__dict__.copy()
         d["transacciones"] = list(d["transacciones"])
+        # Ordena las transacciones para que el hash sea siempre el mismo
+        d["transacciones"].sort()
         return d
 
     def fromDict(self, d):
@@ -173,9 +175,13 @@ class Blockchain:
         for i in range(len(self.chain) - 1):
             # Check Bloque
             if not self.prueba_valida(self.chain[i], self.chain[i].hash):
+                print("Bloque invalido", self.chain[i].toDict())
+                print("Hash calculado", self.chain[i].hash)
+                print("Hash del bloque", self.chain[i].calcular_hash())
                 return False
             # Check cahin link
             if self.chain[i].hash != self.chain[i + 1].hash_previo:
+                print("Link invalido")
                 return False
         return True
 

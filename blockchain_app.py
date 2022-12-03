@@ -42,7 +42,10 @@ def nueva_transaccion():
     # Comprobamos que todos los datos de la transaccion están
     required = ["origen", "destino", "cantidad"]
     if not all(k in values for k in required):
-        return "Faltan valores", 400
+        response = {
+            "mensaje": f"Error: Faltan datos en la transaccion",
+        }
+        return jsonify(response), 400
 
     index = blockchain.n_bloques + 1
     response = {
@@ -58,11 +61,17 @@ def nueva_transaccion():
 @app.route("/chain", methods=["GET"])
 def blockchain_completa():
     """Devuelve un json con la chain completa y su longitud"""
-    response = {
-        # Solamente permitimos la cadena de aquellos bloques finales que tienen hash
-        "chain": [b.toDict() for b in blockchain.chain if b.hash],
-        "longitud": blockchain.n_bloques,  # longitud de la cadena
-    }
+    try:
+        response = {
+            # Solamente permitimos la cadena de aquellos bloques finales que tienen hash
+            "chain": [b.toDict() for b in blockchain.chain if b.hash],
+            "longitud": blockchain.n_bloques,  # longitud de la cadena
+        }
+    except Exception as e:
+        response = {
+            "mensaje": f"Error: {e}",
+        }
+        return jsonify(response), 500
     return jsonify(response), 200
 
 
@@ -89,7 +98,7 @@ def minar():
         response = {
             "mensaje": "Conflicto: No es posible crear un nuevo bloque. Existe una cadena mas larga."
         }
-        return jsonify(response), 201
+        return jsonify(response), 202
 
     if blockchain.integra_bloque(new_block, hash_prueba):
         response = {
@@ -109,7 +118,7 @@ def minar():
     response = {
         "mensaje": "No es posible crear un nuevo bloque. Fallo al hacer la prueba"
     }
-    return jsonify(response), 201
+    return jsonify(response), 203
 
 
 @app.route("/nodos/registrar", methods=["POST"])
@@ -211,7 +220,7 @@ def registrar_nodo_actualiza_blockchain():
         response = {
             "mensaje": "El blockchain de la red esta currupto",
         }
-        return jsonify(response), 400
+        return jsonify(response), 401
 
     # Actualizamos la blockchain
     blockchain = blockchain_leida
@@ -251,8 +260,7 @@ def resuelve_conflictos():
                     longest_chain = node_chain
         except Exception as e:
             # Disconnected node
-            print(e)
-            print("Error contacting node " + node)
+            print("Error contacting node " + node, e)
 
     # Si la cadena mas larga no es la nuestra, la sustituimos por la mas larga
     if longest_chain is not None:

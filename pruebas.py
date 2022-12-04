@@ -2,7 +2,8 @@ import requests
 import json
 import socket
 
-mi_ip = socket.gethostbyname(socket.gethostname())
+node1_ip = socket.gethostbyname(socket.gethostname())
+node2_ip = "192.168.1.45"
 
 """TRANSACCIONES AL NODO 1 (5000)"""
 transacciones = [
@@ -19,10 +20,10 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post(f"http://{mi_ip}:5000/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{node1_ip}:5000/transacciones/nueva", json=transaccion)
 
 """MINAR NODO 1 (5000)"""
-r = requests.get(f"http://{mi_ip}:5000/minar")
+r = requests.get(f"http://{node1_ip}:5000/minar")
 # print("RESPUESTA MINAR NODO 1 (5000)")
 # print(
 #     json.dumps(
@@ -32,7 +33,7 @@ r = requests.get(f"http://{mi_ip}:5000/minar")
 # )
 
 """CADENA NODO 1 (5000)"""
-r = requests.get(f"http://{mi_ip}:5000/chain")
+r = requests.get(f"http://{node1_ip}:5000/chain")
 # print("CHAIN NODO 1 (5000)")
 # print(
 #     json.dumps(
@@ -43,8 +44,8 @@ r = requests.get(f"http://{mi_ip}:5000/chain")
 
 """REGISTRAR NODO 2 (5001)"""
 r = requests.post(
-    f"http://{mi_ip}:5000/nodos/registrar",
-    json={"direccion_nodos": [f"http://{mi_ip}:5001"]},
+    f"http://{node1_ip}:5000/nodos/registrar",
+    json={"direccion_nodos": [f"http://{node2_ip}:5001"]},
 )
 
 # print("RESPUESTA REGISTRAR NODO 2 (5001)")
@@ -55,7 +56,7 @@ r = requests.post(
 #     )
 # )
 # """CADENA NODO 2 (5001)"""
-# r = requests.get(f"http://{mi_ip}:5001/chain")
+# r = requests.get(f"http://{node2_ip}:5001/chain")
 # print("CHAIN NODO 2 (5001)")
 # print(
 #     json.dumps(
@@ -79,14 +80,14 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post(f"http://{mi_ip}:5000/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{node1_ip}:5000/transacciones/nueva", json=transaccion)
 
 
 """MINAR NODO 1 (5000)"""
-r = requests.get(f"http://{mi_ip}:5000/minar")
+r = requests.get(f"http://{node1_ip}:5000/minar")
 
 """CADENA NODO 1 (5000)"""
-r = requests.get(f"http://{mi_ip}:5000/chain")
+r = requests.get(f"http://{node1_ip}:5000/chain")
 
 print("CHAIN NODO 1 (5000)")
 print(
@@ -106,10 +107,10 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post(f"http://{mi_ip}:5001/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{node2_ip}:5001/transacciones/nueva", json=transaccion)
 
 """MINAR NODO 2 (5001)"""
-r = requests.get(f"http://{mi_ip}:5001/minar")
+r = requests.get(f"http://{node2_ip}:5001/minar")
 
 print("RESPPUESTA MINAR NODO 2 (5001)")
 print(

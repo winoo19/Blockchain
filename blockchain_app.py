@@ -9,7 +9,9 @@ app = Flask(__name__)
 # Instanciacion de la aplicacion
 blockchain = BlockChain.Blockchain()
 # Para saber mi ip
-mi_ip = socket.gethostbyname(socket.gethostname())
+# mi_ip = socket.gethostbyname(socket.gethostname())
+"""INTRODUCIR IP A MANO"""
+mi_ip = "192.168.1.45"
 # Nodos peer-to-peer
 nodos_red = set()
 # Semaphore

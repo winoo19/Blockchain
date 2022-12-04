@@ -10,7 +10,7 @@ def jsonify(response):
 
 
 node1 = "192.168.56.102:5000"
-node2 = "192.168.56.101:5001"
+node2 = "192.168.56.102:5001"
 
 # TRANSACCIONES AL NODO 1
 transacciones = [

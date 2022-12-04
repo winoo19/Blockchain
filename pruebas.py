@@ -9,8 +9,10 @@ def jsonify(response):
         return {"Error": response.text}
 
 
-node1 = "192.168.56.102:5000"
-node2 = "192.168.56.101:5001"
+# node1 = "192.168.56.102:5000"
+# node2 = "192.168.56.101:5001"
+node1 = "192.168.1.45:5000"
+node2 = "192.168.1.45:5001"
 
 # TRANSACCIONES AL NODO 1
 transacciones = [

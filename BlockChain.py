@@ -92,11 +92,11 @@ class Blockchain:
         :return: el nuevo bloque
         """
         new_block = Bloque(
-            indice = self.n_bloques + 1,
-            transacciones = self.pool.copy(),
-            timestamp = time(),
-            hash_previo = hash_previo,
-            prueba = 0,
+            indice=self.n_bloques + 1,
+            transacciones=self.pool.copy(),
+            timestamp=time(),
+            hash_previo=hash_previo,
+            prueba=0,
         )
         return new_block
 
@@ -122,8 +122,8 @@ class Blockchain:
         new_hash = "0" * (self.dificultad - 1) + "1"
 
         while new_hash[: self.dificultad] != "0" * self.dificultad:
-            new_hash = bloque.calcular_hash()
             bloque.prueba += 1
+            new_hash = bloque.calcular_hash()
 
         return new_hash
 
@@ -183,7 +183,7 @@ class Blockchain:
             if self.chain[i].hash != self.chain[i + 1].hash_previo:
                 return False
 
-        if not self.prueba_valida(self.chain[-1], self.chain[-1].hash):
+        if not self.prueba_valida(self.chain[-1], self.chain[-1].hash):  # ERROR?
             return False
 
         return True

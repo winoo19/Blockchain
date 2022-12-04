@@ -11,7 +11,8 @@ blockchain = BlockChain.Blockchain()
 # Para saber mi ip
 # mi_ip = socket.gethostbyname(socket.gethostname())
 """INTRODUCIR IP DEL ETHERNET A MANO"""
-mi_ip = "192.168.56.102"
+# mi_ip = "192.168.56.102"
+mi_ip = "192.168.1.45"
 # Nodos peer-to-peer
 nodos_red = set()
 # Semaphore
@@ -305,6 +306,6 @@ if __name__ == "__main__":
     backup = threading.Thread(target=copia)
     backup.start()
     # app.run(host="0.0.0.0", port=puerto, debug=True)
-    app.run(host=f"{mi_ip}", port=puerto, debug=True)
+    app.run(host=f"{mi_ip}", port=puerto)
     end_thread = True
     backup.join()

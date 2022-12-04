@@ -231,12 +231,3 @@ class Blockchain:
         self.n_bloques = len(chain)
 
         return self
-
-
-if __name__ == "__main__":
-    blockchain = Blockchain()
-    b = blockchain.nuevo_bloque("puto")
-    b.hash = blockchain.prueba_trabajo(b)
-    print(b.hash)
-
-    print(blockchain.prueba_valida(b, b.hash))

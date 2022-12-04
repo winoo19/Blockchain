@@ -8,11 +8,8 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 # Instanciacion de la aplicacion
 blockchain = BlockChain.Blockchain()
-# Para saber mi ip
-# mi_ip = socket.gethostbyname(socket.gethostname())
-"""INTRODUCIR IP DEL ETHERNET A MANO"""
-# mi_ip = "192.168.56.102"
-mi_ip = "192.168.1.45"
+"""INTRODUCIR IP A MANO"""
+mi_ip = "192.168.56.102"
 # Nodos peer-to-peer
 nodos_red = set()
 # Semaphore
@@ -24,7 +21,7 @@ end_thread = False
 def copia():
     """Crea una copia de seguridad de la blockchain cada 60 segundos"""
     while not end_thread:
-        n = 1000
+        n = 10000
         for _ in range(n):
             time.sleep(60 / n)
             if end_thread:
@@ -305,7 +302,7 @@ if __name__ == "__main__":
     puerto = args.puerto
     backup = threading.Thread(target=copia)
     backup.start()
-    # app.run(host="0.0.0.0", port=puerto, debug=True)
+    # app.run(host="0.0.0.0", port=puerto)
     app.run(host=f"{mi_ip}", port=puerto)
     end_thread = True
     backup.join()

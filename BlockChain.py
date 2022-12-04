@@ -1,7 +1,7 @@
 import json
 import hashlib
 from time import time
-from typing import List, Dict
+from typing import List
 
 DIFICULTAD = 1
 HASH_VACIO = ""
@@ -32,7 +32,7 @@ class Bloque:
 
         self.hash = HASH_VACIO
 
-    def calcular_hash(self):
+    def calcular_hash(self) -> str:
         """
         Metodo que devuelve el hash de el bloque. No se incluye el hash del bloque
         en el calculo del hash.
@@ -42,7 +42,7 @@ class Bloque:
         block_string = json.dumps(dict_without_hash, sort_keys=True)
         return hashlib.sha256(block_string.encode()).hexdigest()
 
-    def toDict(self):
+    def toDict(self) -> dict:
         """
         Convierte el bloque en un diccionario y las transacciones en una lista
         para poder ser serializado por json.
@@ -53,7 +53,7 @@ class Bloque:
         d["transacciones"].sort()
         return d
 
-    def fromDict(self, d):
+    def fromDict(self, d: dict):
         """
         Crea el bloque a partir de un diccionario.
         Convierte las transacciones en un set.
@@ -74,64 +74,67 @@ class Blockchain:
         self.pool = set()
         self.n_bloques = 0
 
-        self.primer_bloque()
+        self._primer_bloque()
 
-    def primer_bloque(self):
+    def _primer_bloque(self):
         """
-        Crea el bloque inicial vacío, con tiempo 0 y hash previo de 1 y lo integra
+        Crea el bloque inicial vacío y lo integra a la cadena
         """
-
         bloque = self.nuevo_bloque(hash_previo="1")
         hash_bloque = self.prueba_trabajo(bloque)
         self.integra_bloque(bloque, hash_bloque)
 
     def nuevo_bloque(self, hash_previo: str) -> Bloque:
         """
-        Crea un nuevo bloque a partir de las transacciones que no estan
+        Crea un nuevo bloque a partir de las transacciones que no están
         confirmadas
-        :param prueba: el valor de prueba a insertar en el bloque
         :param hash_previo: el hash del bloque anterior de la cadena
         :return: el nuevo bloque
         """
-
         new_block = Bloque(
-            indice=self.n_bloques + 1,
-            transacciones=self.pool.copy(),  # Copia para que no se añadan nuevas transacciones
-            timestamp=time(),
-            hash_previo=hash_previo,
-            prueba=0,
+            indice = self.n_bloques + 1,
+            transacciones = self.pool.copy(),
+            timestamp = time(),
+            hash_previo = hash_previo,
+            prueba = 0,
         )
         return new_block
 
-    def nueva_transaccion(self, origen: str, destino: str, cantidad: int) -> int:
+    def nueva_transaccion(self, origen: str, destino: str, cantidad: int):
         """
         Crea una nueva transaccion a partir de un origen, un destino y una
-        cantidad y la incluye en el set de transacciones.
+        cantidad, y la incluye en el pool.
+        :param origen: ip de origen de la transacción
+        :param destino: ip de destino de la transacción
+        :param cantidad: cantidad de la transacción
+        :return: None
         """
         transaccion = {"origen": origen, "destino": destino, "cantidad": cantidad}
         self.pool.add(str(transaccion))
 
     def prueba_trabajo(self, bloque: Bloque) -> str:
         """
-        Calcula el nonce que hace que el hash del bloque comience con tantos
-        ceros como la dificultad.
-        Return: el hash del bloque con el nonce encontrado (str)
+        Calcula el valor del parámetro prueba que hace que el hash del bloque
+        comience con tantos ceros como la dificultad establecida.
+        :param bloque: bloque del que calcular el hash
+        :return: el hash del bloque con la prueba encontrada
         """
         new_hash = "0" * (self.dificultad - 1) + "1"
 
         while new_hash[: self.dificultad] != "0" * self.dificultad:
-            bloque.prueba += 1
             new_hash = bloque.calcular_hash()
+            bloque.prueba += 1
 
         return new_hash
 
     def prueba_valida(self, bloque: Bloque, hash_bloque: str) -> bool:
         """
-        Metodo que comprueba si el hash del bloque comienza con tantos ceros como la
-        dificultad estipulada en el blockchain y que su hash realmente coincide
-        con el calculado.
-        Si cualquiera de ambas comprobaciones es falsa, devolvera falso y en caso
-        contrario, verdadero
+        Método que comprueba si el hash del bloque comienza con tantos ceros como
+        la dificultad establecida y que su hash realmente coincide con el calculado.
+        :param bloque: bloque del que hacer la comprobación
+        :param hash_bloque: hash asignado al bloque
+        :return: False si no pasa cualquiera de las comprobaciones y verdadero en
+        caso contrario
         """
         if hash_bloque[: self.dificultad] != "0" * self.dificultad:
             return False
@@ -143,13 +146,12 @@ class Blockchain:
 
     def integra_bloque(self, bloque_nuevo: Bloque, hash_prueba: str) -> bool:
         """
-        Metodo para integrar correctamente un bloque a la cadena de bloques.
-        Debe comprobar que la prueba de hash es valida y que el hash del bloque
-        ultimo de la cadena coincida con el hash_previo del bloque que se va a
-        integrar. Si pasa las comprobaciones, actualiza el hash del bloque a
-        integrar, lo inserta en la cadena y reiniicia el pool de transacciones.
-        Return: True si se ha podido ejecutar bien y False si no pasa las
-        comprobaciones.
+        Comprueba que el hash asignado al bloque es correcto, y si es así,
+        lo integra en la cadena y actualiza la pool y el número de bloques.
+        :param bloque_nuevo: bloque a integrar
+        :param hash_prueba: hash asignado al bloque
+        :return: False si no pasa cualquiera de las comprobaciones y True en
+        caso contrario
         """
         if self.n_bloques > 0 and bloque_nuevo.hash_previo != self.chain[-1].hash:
             return False
@@ -163,63 +165,71 @@ class Blockchain:
         # y se pueden añadir nuevas transacciones
         self.pool = self.pool - bloque_nuevo.transacciones
         self.n_bloques += 1
+
         return True
 
-    def check_chain(self):
+    def check_chain(self) -> bool:
         """
-        Metodo que comprueba la integridad de la cadena de bloques. Para ello
-        recorre la cadena de bloques y comprueba que el hash del bloque actual
-        coincide con el hash_previo del siguiente bloque y que el bloque es valido.
-        Return: True si la cadena es valida y False en caso contrario
+        Comprueba que la cadena de bloques es válida, es decir, que sus hashes
+        y sus hashes previos son correctos.
+        :return: False si no pasa cualquiera de las comprobaciones y True en
+        caso contrario
         """
         for i in range(len(self.chain) - 1):
             # Check Bloque
             if not self.prueba_valida(self.chain[i], self.chain[i].hash):
-                print("Bloque invalido", self.chain[i].toDict())
-                print("Hash calculado", self.chain[i].hash)
-                print("Hash del bloque", self.chain[i].calcular_hash())
                 return False
-            # Check cahin link
+            # Check chain link
             if self.chain[i].hash != self.chain[i + 1].hash_previo:
-                print("Link invalido")
                 return False
+
+        if not self.prueba_valida(self.chain[-1], self.chain[-1].hash):
+            return False
+
         return True
 
-    def toDict(self):
+    def toDict(self) -> dict:
         """
         Convierte la cadena de bloques a un diccionario para poder guardarlo en
         un archivo JSON. Convierte cada bloque a un diccionario y la pool de
         transacciones a lista.
+        :return: el diccionario correspondiente a la blockchain
         """
         d = {}
         d["chain"] = [b.toDict() for b in self.chain]
         d["dificultad"] = self.dificultad
         d["pool"] = list(self.pool)
         d["n_bloques"] = self.n_bloques
+
         return d
 
-    def fromDict(self, d):
+    def fromDict(self, d: dict):
         """
         Crea un blockchain a partir de un diccionario. Crea cada bloque a partir
         de su diccionario y la pool como un set a partir de la lista.
+        :param d: diccionario correspondiente a la blockchain
+        :return: la instancia de la clase blockchain
         """
         self.chain = [Bloque().fromDict(b) for b in d["chain"]]
         self.dificultad = d["dificultad"]
         self.pool = set(d["pool"])
         self.n_bloques = d["n_bloques"]
+
         return self
 
-    def fromChain(self, chain: dict):
+    def fromChain(self, chain: list):
         """
         Crea un blockchain a partir de una cadena de bloques. Crea cada bloque a
         partir de su diccionario e inicia el resto de variables vacias.
-        Se usa para comprobar que la cadena de bloques es valida en
-        BlochChain.py
+        Se usa para comprobar que la cadena de bloques es valida en BlochChain.py
+        :param chain: lista de bloques
+        :return: instancia de la clase blockchain
         """
         self.chain = [Bloque().fromDict(b) for b in chain]
         self.dificultad = DIFICULTAD
         self.pool = set()
         self.n_bloques = len(chain)
+
         return self
 
 

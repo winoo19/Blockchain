@@ -259,12 +259,14 @@ def resuelve_conflictos():
     longest_chain = None
     max_length = longitud_actual
 
+    # Comprobamos si hay alguna cadena mas larga
     for node in nodos_red:
         try:
             r = requests.get(f"{node}/chain")
             if r.status_code == 200:
-                node_chain = r.json()["chain"]
-                node_length = r.json()["longitud"]
+                response = r.json()
+                node_chain = response["chain"]
+                node_length = response["longitud"]
                 node_BC = BlockChain.Blockchain().fromChain(node_chain)
                 if node_length > max_length and node_BC.check_chain():
                     max_length = node_length
@@ -280,7 +282,10 @@ def resuelve_conflictos():
             # Quitamos de nuestra pool transacciones ya incluidas en la nueva cadena
             if i >= longitud_actual:
                 blockchain.pool = blockchain.pool - set(block["transacciones"])
+                
+            # Creamos los bloques de la cadena a partir de los dicts
             new_chain.append(BlockChain.Bloque().fromDict(block))
+        blockchain.chain = new_chain
         return True
     # Si la cadena mas larga es la nuestra, no hacemos nada
     return False

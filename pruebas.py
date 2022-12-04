@@ -1,12 +1,18 @@
 import requests
 import json
-import socket
 
-# node1_ip = socket.gethostbyname(socket.gethostname())
-node1_ip = "192.168.56.102"
-node2_ip = "192.168.56.101"
 
-"""TRANSACCIONES AL NODO 1 (5000)"""
+def jsonify(response):
+    try:
+        return response.json()
+    except ValueError:
+        return {"Error": response.text}
+
+
+node1 = "192.168.56.102:5000"
+node2 = "192.168.56.101:5001"
+
+# TRANSACCIONES AL NODO 1
 transacciones = [
     {
         "origen": "A",
@@ -21,52 +27,33 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post(f"http://{node1_ip}:5000/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{node1}/transacciones/nueva", json=transaccion)
 
-"""MINAR NODO 1 (5000)"""
-r = requests.get(f"http://{node1_ip}:5000/minar")
-# print("RESPUESTA MINAR NODO 1 (5000)")
-# print(
-#     json.dumps(
-#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
-#         indent=4,
-#     )
-# )
+# MINAR NODO 1
+r = requests.get(f"http://{node1}/minar")
+print(f"RESPUESTA MINAR NODO 1 ({node1})")
+print(json.dumps(jsonify(r), indent=4))
 
-"""CADENA NODO 1 (5000)"""
-r = requests.get(f"http://{node1_ip}:5000/chain")
-# print("CHAIN NODO 1 (5000)")
-# print(
-#     json.dumps(
-#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
-#         indent=4,
-#     )
-# )
+# CADENA NODO 1
+r = requests.get(f"http://{node1}/chain")
+print(f"CHAIN NODO 1 ({node1})")
+print(json.dumps(jsonify(r), indent=4))
 
-"""REGISTRAR NODO 2 (5001)"""
+# REGISTRAR NODO 2
 r = requests.post(
-    f"http://{node1_ip}:5000/nodos/registrar",
-    json={"direccion_nodos": [f"http://{node2_ip}:5001"]},
+    f"http://{node1}/nodos/registrar",
+    json={"direccion_nodos": [f"http://{node2}"]},
 )
 
-# print("RESPUESTA REGISTRAR NODO 2 (5001)")
-# print(
-#     json.dumps(
-#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
-#         indent=4,
-#     )
-# )
-# """CADENA NODO 2 (5001)"""
-# r = requests.get(f"http://{node2_ip}:5001/chain")
-# print("CHAIN NODO 2 (5001)")
-# print(
-#     json.dumps(
-#         r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
-#         indent=4,
-#     )
-# )
+print(f"RESPUESTA REGISTRAR NODO 2 ({node2})")
+print(json.dumps(jsonify(r), indent=4))
 
-"""TRANSACCIONES AL NODO 1 (5000)"""
+# CADENA NODO 2
+r = requests.get(f"http://{node2}/chain")
+print(f"CHAIN NODO 2 ({node2})")
+print(json.dumps(jsonify(r), indent=4))
+
+# TRANSACCIONES AL NODO 1
 transacciones = [
     {
         "origen": "H",
@@ -81,24 +68,19 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post(f"http://{node1_ip}:5000/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{node1}/transacciones/nueva", json=transaccion)
 
 
-"""MINAR NODO 1 (5000)"""
-r = requests.get(f"http://{node1_ip}:5000/minar")
+# MINAR NODO 1
+r = requests.get(f"http://{node1}/minar")
 
-"""CADENA NODO 1 (5000)"""
-r = requests.get(f"http://{node1_ip}:5000/chain")
+# CADENA NODO 1
+r = requests.get(f"http://{node1}/chain")
 
-print("CHAIN NODO 1 (5000)")
-print(
-    json.dumps(
-        r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
-        indent=4,
-    )
-)
+print(f"CHAIN NODO 1 ({node1})")
+print(json.dumps(jsonify(r), indent=4))
 
-"""TRANSACCIONES AL NODO 2 (5001)"""
+# TRANSACCIONES AL NODO 2
 transacciones = [
     {
         "origen": "H",
@@ -108,15 +90,15 @@ transacciones = [
 ]
 
 for transaccion in transacciones:
-    r = requests.post(f"http://{node2_ip}:5001/transacciones/nueva", json=transaccion)
+    r = requests.post(f"http://{node2}/transacciones/nueva", json=transaccion)
 
-"""MINAR NODO 2 (5001)"""
-r = requests.get(f"http://{node2_ip}:5001/minar")
+# MINAR NODO 2
+r = requests.get(f"http://{node2}/minar")
 
-print("RESPPUESTA MINAR NODO 2 (5001)")
-print(
-    json.dumps(
-        r.json() if r.status_code // 100 == 2 else {"ERROR" + str(r.status_code)},
-        indent=4,
-    )
-)
+print(f"RESPPUESTA MINAR NODO 2 ({node2})")
+print(json.dumps(jsonify(r), indent=4))
+
+# CADENA NODO 2
+r = requests.get(f"http://{node2}/chain")
+print(f"CHAIN NODO 2 ({node2})")
+print(json.dumps(jsonify(r), indent=4))

@@ -10,18 +10,24 @@ app = Flask(__name__)
 blockchain = BlockChain.Blockchain()
 # Para saber mi ip
 # mi_ip = socket.gethostbyname(socket.gethostname())
-"""INTRODUCIR IP A MANO"""
-mi_ip = "192.168.1.45"
+"""INTRODUCIR IP DEL ETHERNET A MANO"""
+mi_ip = "192.168.56.102"
 # Nodos peer-to-peer
 nodos_red = set()
 # Semaphore
 mutex = threading.Semaphore(1)
+# End thread
+end_thread = False
 
 
 def copia():
     """Crea una copia de seguridad de la blockchain cada 60 segundos"""
-    while True:
-        time.sleep(60)
+    while not end_thread:
+        n = 1000
+        for _ in range(n):
+            time.sleep(60 / n)
+            if end_thread:
+                return None
         mutex.acquire()
         with open(f"respaldo-nodo{mi_ip}-{puerto}.json", "w") as j:
             dic = {
@@ -290,4 +296,6 @@ if __name__ == "__main__":
     backup = threading.Thread(target=copia)
     backup.start()
     # app.run(host="0.0.0.0", port=puerto, debug=True)
-    app.run(host=f"{mi_ip}", port=puerto)
+    app.run(host=f"{mi_ip}", port=puerto, debug=True)
+    end_thread = True
+    backup.join()

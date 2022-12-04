@@ -2,8 +2,9 @@ import requests
 import json
 import socket
 
-node1_ip = socket.gethostbyname(socket.gethostname())
-node2_ip = "192.168.1.45"
+# node1_ip = socket.gethostbyname(socket.gethostname())
+node1_ip = "192.168.56.102"
+node2_ip = "192.168.56.101"
 
 """TRANSACCIONES AL NODO 1 (5000)"""
 transacciones = [

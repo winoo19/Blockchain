@@ -3,6 +3,8 @@ import re, time, json, socket, requests, threading
 from datetime import datetime
 from argparse import ArgumentParser
 from flask import Flask, jsonify, request
+import psutil
+import platform
 
 # Instancia del nodo
 app = Flask(__name__)
@@ -35,6 +37,27 @@ def copia():
             }
             json.dump(dic, j)
         mutex.release()
+
+
+@app.route("/system", methods=["GET"])
+def system():
+    """Devuelve informacion del hardware y software del nodo"""
+    return jsonify(
+        {
+            "hardware": {
+                "cpu_usage": str(psutil.cpu_percent()) + "%",
+                "ram_usage": str(psutil.virtual_memory().percent) + "%",
+                "drive_usage": str(psutil.disk_usage("/").percent) + "%",
+                "cpu_count": psutil.cpu_count(),
+                "cpu_freq": str(psutil.cpu_freq().current) + "Mhz",
+            },
+            "software": {
+                "sistema": platform.platform(),
+                "version": platform.release(),
+                "python": platform.python_version(),
+            },
+        }
+    )
 
 
 @app.route("/transacciones/nueva", methods=["POST"])

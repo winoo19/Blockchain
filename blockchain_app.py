@@ -1,10 +1,15 @@
+# Authors:
+# - Sergio Herreros Perez
+# - Daniel Sanchez Sanchez
+
+
 import BlockChain
-import re, time, json, socket, requests, threading
+import re, time, json, threading, platform
 from datetime import datetime
 from argparse import ArgumentParser
+import requests
 from flask import Flask, jsonify, request
 import psutil
-import platform
 
 # Instancia del nodo
 app = Flask(__name__)

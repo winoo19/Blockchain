@@ -1,3 +1,8 @@
+# Authors:
+# - Sergio Herreros Perez
+# - Daniel Sanchez Sanchez
+
+
 import json
 import hashlib
 from time import time

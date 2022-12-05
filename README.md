@@ -1,5 +1,8 @@
 # Blockchain
-Blockchain project using sockets
+## Blockchain app using Flask and Python
 
-DUDAS:
-- Resolver conflicto -> Error contacting node how to handle
+Python version: 3.10.6
+
+Authors:
+- Sergio Herreros Perez
+- Daniel Sánchez Sánchez

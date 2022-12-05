@@ -11,7 +11,7 @@ app = Flask(__name__)
 # Instanciacion de la aplicacion
 blockchain = BlockChain.Blockchain()
 """INTRODUCIR IP A MANO"""
-mi_ip = "192.168.56.102"
+mi_ip = "192.168.1.45"
 # Nodos peer-to-peer
 nodos_red = set()
 # Semaphore
@@ -114,7 +114,12 @@ def minar():
         return jsonify(response), 201
 
     # Hay transaccion
+    # Recibimos un pago por minar el bloque
+    pago = {"origen": "0", "destino": mi_ip, "cantidad": 1}
     previous_hash = blockchain.chain[-1].hash
+    blockchain.nueva_transaccion(**pago)
+
+    # Creamos el bloque
     new_block = blockchain.nuevo_bloque(previous_hash)
 
     # Minamos el bloque
@@ -133,15 +138,12 @@ def minar():
         response = {
             "mensaje": "Nuevo bloque minado",
             "indice": new_block.indice,
-            "transacciones": list(new_block.transacciones),
+            "transacciones": list(sorted(new_block.transacciones)),
             "valor_prueba": new_block.prueba,
             "hash_previo": new_block.hash_previo,
             "hash": new_block.hash,
             "timestamp": new_block.timestamp,
         }
-        # Recibimos un pago por minar el bloque
-        pago = {"origen": 0, "destino": mi_ip, "cantidad": 1}
-        requests.post(f"http://{mi_ip}:{puerto}/transacciones/nueva", json=pago)
         return jsonify(response), 200
 
     response = {

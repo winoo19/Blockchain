@@ -10,8 +10,8 @@ def jsonify(response):
 
 
 """INTRODUCIR NODOS A MANO: node1 host y node2 guest"""
-node1 = "192.168.56.102:5000"
-node2 = "192.168.56.101:5001"
+node1 = "192.168.1.45:5000"
+node2 = "192.168.1.45:5001"
 
 # TRANSACCIONES AL NODO 1
 transacciones = [

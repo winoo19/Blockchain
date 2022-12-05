@@ -3,7 +3,7 @@ import hashlib
 from time import time
 from typing import List
 
-DIFICULTAD = 1
+DIFICULTAD = 4
 HASH_VACIO = ""
 
 

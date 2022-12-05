@@ -176,10 +176,10 @@ class Blockchain:
         caso contrario
         """
         for i in range(len(self.chain) - 1):
-            # Check Bloque
+            # Comprobar Bloque
             if not self.prueba_valida(self.chain[i], self.chain[i].hash):
                 return False
-            # Check chain link
+            # Comprobar link
             if self.chain[i].hash != self.chain[i + 1].hash_previo:
                 return False
 

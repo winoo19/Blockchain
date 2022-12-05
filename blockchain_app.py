@@ -327,7 +327,6 @@ if __name__ == "__main__":
     puerto = args.puerto
     backup = threading.Thread(target=copia)
     backup.start()
-    # app.run(host="0.0.0.0", port=puerto)
     app.run(host=f"{mi_ip}", port=puerto)
     end_thread = True
     backup.join()
